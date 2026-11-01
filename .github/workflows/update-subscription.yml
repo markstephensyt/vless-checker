@@ -1,0 +1,83 @@
+name: Update subscription
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-subscription
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      TG_API_ID: ${{ secrets.TG_API_ID }}
+      TG_API_HASH: ${{ secrets.TG_API_HASH }}
+      TG_CHANNEL: ${{ secrets.TG_CHANNEL }}
+      TG_SESSION: ${{ secrets.TG_SESSION }}
+      MESSAGE_LIMIT: "7"
+      HEALTHCHECK_URL: "https://www.gstatic.com/generate_204"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install sing-box
+        run: |
+          sudo mkdir -p /etc/apt/keyrings
+          curl -fsSL https://sing-box.app/gpg.key \
+            | sudo tee /etc/apt/keyrings/sagernet.asc >/dev/null
+          sudo chmod a+r /etc/apt/keyrings/sagernet.asc
+
+          printf '%s\n' \
+            'Types: deb' \
+            'URIs: https://deb.sagernet.org/' \
+            'Suites: *' \
+            'Components: *' \
+            'Enabled: yes' \
+            'Signed-By: /etc/apt/keyrings/sagernet.asc' \
+            | sudo tee /etc/apt/sources.list.d/sagernet.sources
+
+          sudo apt-get update
+          sudo apt-get install -y sing-box
+          sing-box version
+
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Collect and check links
+        run: python collect_and_check.py
+
+      - name: Commit subscription if changed
+        run: |
+          if [ ! -f subscription.txt ]; then
+            echo "subscription.txt не создан; коммит пропускаю"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add subscription.txt
+
+          if git diff --cached --quiet; then
+            echo "Подписка не изменилась"
+            exit 0
+          fi
+
+          git commit -m "Update subscription"
+          git push
+
