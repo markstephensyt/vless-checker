@@ -129,6 +129,7 @@ def is_working(link):
                 proxies=proxy.proxies,
                 timeout=(4, 8),
                 allow_redirects=False,
+                verify=False,
             )
 
             try:
