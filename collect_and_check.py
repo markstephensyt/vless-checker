@@ -2,6 +2,7 @@ import asyncio
 import os
 import re
 from pathlib import Path
+from telethon.sessions import StringSession
 
 import requests
 from telethon import TelegramClient
