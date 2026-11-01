@@ -183,8 +183,6 @@ async def main():
     save_subscription(working)
 
 
-    save_subscription(working)
-
     print(f"Готово: рабочих {len(working)}, не прошли {failed}")
     print(f"Файл подписки: {OUTPUT_FILE}")
 
