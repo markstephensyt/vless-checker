@@ -68,20 +68,45 @@ async def collect_recent_links():
     api_hash = os.environ["TG_API_HASH"]
     channel = os.environ["TG_CHANNEL"]
 
+    session_string = os.getenv("TG_SESSION")
+    session = (
+        StringSession(session_string)
+        if session_string
+        else "telegram_session"
+    )
+
+    client = TelegramClient(
+        session,
+        api_id,
+        api_hash,
+        timeout=5,
+        connection_retries=1,
+        request_retries=1,
+        retry_delay=0,
+        auto_reconnect=False,
+    )
+
     links = []
 
-    async with TelegramClient("telegram_session", api_id, api_hash) as client:
-        await client.start()
+    await client.connect()
+    try:
+        if not await client.is_user_authorized():
+            raise RuntimeError(
+                "Telegram-сессия не авторизована. "
+                "Проверь TG_SESSION или локальный telegram_session.session."
+            )
 
         async for message in client.iter_messages(
             channel,
             limit=MESSAGE_LIMIT,
         ):
             links.extend(extract_links(message))
+    finally:
+        await client.disconnect()
 
-    # Нормализуем и убираем дубликаты, сохраняя порядок.
     normalized = (normalize_link(link) for link in links)
     return list(dict.fromkeys(normalized))
+
 
 
 def is_working(link):
@@ -148,6 +173,14 @@ async def main():
                 f"[{index}/{len(links)}] "
                 f"Ошибка или таймаут ({type(exc).__name__})"
             )
+    if not working:
+        raise RuntimeError(
+            "Рабочих ссылок не найдено; существующий subscription.txt "
+            "оставлен без изменений."
+        )
+
+    save_subscription(working)
+
 
     save_subscription(working)
 
