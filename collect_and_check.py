@@ -33,12 +33,21 @@ def clean_link(link):
 
 
 def normalize_link(link):
-    """Заменяет неподдерживаемый sing-box параметр fp=unsafe на fp=chrome."""
-    return re.sub(
-        r"(?i)([?&]fp=)unsafe(?=(&|#|$))",
-        r"\1chrome",
-        link,
-    )
+    """Заменяет fp=unsafe на fp=chrome и принудительно отключает проверку SSL в sing-box."""
+    # Твой старый фикс для fp
+    link = re.sub(r"(?i)([?&]fp=)unsafe(?=(&|#|$))", r"\1chrome", link)
+    
+    # ДобавляемallowInsecure=1 в параметры ссылки
+    if "?" in link:
+        # Если параметры уже есть, дописываем через &
+        if "allowInsecure=" not in link:
+            link = link.replace("?", "?allowInsecure=1&")
+    else:
+        # Если параметров нет, отделяем знаком ?
+        link += "?allowInsecure=1"
+        
+    return link
+
 
 
 def extract_links(message):
@@ -175,10 +184,9 @@ async def main():
                 f"Ошибка или таймаут ({type(exc).__name__})"
             )
     if not working:
-        raise RuntimeError(
-            "Рабочих ссылок не найдено; существующий subscription.txt "
-            "оставлен без изменений."
-        )
+        print("⚠️ Рабочих ссылок не найдено; существующий subscription.txt оставлен без изменений.")
+        return  # Просто мирно выходим из скрипта без краша
+
 
     save_subscription(working)
 
