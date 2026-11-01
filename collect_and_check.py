@@ -33,17 +33,19 @@ def clean_link(link):
 
 
 def normalize_link(link):
-    """Заменяет fp=unsafe на fp=chrome и принудительно отключает проверку SSL в sing-box."""
-    # Твой старый фикс для fp
+    """Заменяет fp=unsafe на fp=chrome и отключает SSL только для не-vmess ссылок."""
+    # Фикс для параметров fp
     link = re.sub(r"(?i)([?&]fp=)unsafe(?=(&|#|$))", r"\1chrome", link)
     
-    # ДобавляемallowInsecure=1 в параметры ссылки
+    # Если это vmess, выходим сразу, чтобы не ломать Base64 структуру
+    if link.lower().startswith("vmess://"):
+        return link
+        
+    # Добавляем allowInsecure=1 только для vless, trojan, hy2, ss
     if "?" in link:
-        # Если параметры уже есть, дописываем через &
         if "allowInsecure=" not in link:
             link = link.replace("?", "?allowInsecure=1&")
     else:
-        # Если параметров нет, отделяем знаком ?
         link += "?allowInsecure=1"
         
     return link
