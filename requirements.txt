@@ -1,0 +1,3 @@
+telethon
+requests[socks]
+singbox2proxy==0.3.4
