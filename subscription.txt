@@ -1,3 +1,4 @@
-vless://58e22afd-bf74-4736-984d-63a8ca03d7f0@31.76.3.52:443?allowInsecure=1&encryption=none&fp=firefox&path=%2Fmedia%2Fws%2F&security=tls&sni=payablemeta.cleanfoodshop.org&type=ws#🇸🇪
+hy2://41edb44c8e@103.88.243.142:11592/?allowInsecure=1&insecure=1&sni=srv-17e124.21freedom.net#[RU
+vmess://eyJ2IjoiMiIsInBzIjoiU3VwZXJWUE4gTkwtQW1zdGVyZGFtICM4MTMgW1ZNZXNzXSIsImFkZCI6IjE4OC4xNjYuODEuMTM1IiwicG9ydCI6IjEyNzAiLCJpZCI6IjVjMDQwZjFkLTQ1ZGItNDNiZC04ZDQ2LWU0OTUwZTQzMzczNSIsImFpZCI6IjAiLCJuZXQiOiJ0Y3AiLCJ0eXBlIjoibm9uZSIsImhvc3QiOiIiLCJwYXRoIjoiIiwidGxzIjoidGxzIiwic25pIjoieG1maGxweS5jb20iLCJhbHBuIjoiIiwic2N5IjoiYXV0byJ9
 vless://38308ff1-5aa9-494f-a25a-0f2870d56b3e@201.51.12.98:443?allowInsecure=1&security=tls&sni=vps3.nemnogogo.com&type=grpc&serviceName=mobile.api.Event&fp=firefox&alpn=h2#🔒
 vless://38308ff1-5aa9-494f-a25a-0f2870d56b3e@201.24.116.192:443?allowInsecure=1&encryption=none&fp=firefox&security=tls&serviceName=mobile.api.Event&sni=vps3.nemnogogo.com&type=grpc#🇷🇺
